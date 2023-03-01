@@ -1,4 +1,4 @@
-package ru.skypro.homework.dto.response;
+package ru.skypro.homework.dto;
 
 import lombok.Data;
 import ru.skypro.homework.dto.User;
