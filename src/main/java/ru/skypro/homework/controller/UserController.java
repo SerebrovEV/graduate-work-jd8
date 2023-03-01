@@ -2,8 +2,10 @@ package ru.skypro.homework.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.skypro.homework.dto.CreateUser;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.User;
+import ru.skypro.homework.dto.response.ResponseWrapperUser;
 
 import java.util.Collection;
 
@@ -16,7 +18,7 @@ public class UserController {
      * Добавляет пользователя
      */
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<CreateUser> addUser(@RequestBody CreateUser user) {
         return ResponseEntity.ok(user);
     }
 
@@ -24,8 +26,8 @@ public class UserController {
      * Выводит всех пользователей
      */
     @GetMapping("/me")
-    public ResponseEntity<Collection<User>> getUsers() {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<ResponseWrapperUser> getUsers() {
+        return ResponseEntity.ok(new ResponseWrapperUser());
     }
 
     /**
