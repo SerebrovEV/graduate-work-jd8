@@ -2,10 +2,15 @@ package ru.skypro.homework.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
+
+import javax.xml.crypto.OctetStreamData;
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -23,48 +28,26 @@ public class AdsController {
         return ResponseEntity.ok(new ResponseWrapperAds());
     }
 
-    @PostMapping
-    public ResponseEntity<CreateAds> addAds(@RequestBody CreateAds createAds) {
-        return ResponseEntity.ok(createAds);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Ads> addAds(@RequestPart CreateAds properties,
+                                      @RequestPart MultipartFile image) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Ads());
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAds> getAdsMe(@RequestParam(value = "authenticated", required = false) boolean authenticated,
-                                                       @RequestParam(value = "authorities[0].authority", required = false) String authorities0authority,
-                                                       @RequestParam(value = "credentials", required = false) Object credentials,
-                                                       @RequestParam(value = "details", required = false) Object details,
-                                                       @RequestParam(value = "principal", required = false) Object principal) {
-        return ResponseEntity.ok(new ResponseWrapperAds());
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ResponseWrapperComment());
     }
 
-    @GetMapping("/{ad_pk}/comment")
-    public ResponseEntity<ResponseWrapperAdsComment> getAdsComment(@PathVariable("ad_pk") String adPk) {
-        return ResponseEntity.ok(new ResponseWrapperAdsComment());
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<Comment> addComments(@PathVariable Integer id,
+                                               @RequestBody Comment comment) {
+        return ResponseEntity.ok(comment);
     }
 
-    @PostMapping("/{ad_pk}/comment")
-    public ResponseEntity<AdsComment> addAdsComments(@PathVariable("ad_pk") String adPk,
-                                                     @RequestBody AdsComment adsComment) {
-        return ResponseEntity.ok(adsComment);
-    }
-
-    @DeleteMapping("/{ad_pk}/comment/{id}")
-    public ResponseEntity deleteAdsComment(@PathVariable("ad_pk") String adPk,
-                                           @PathVariable Integer id) {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{ad_pk}/comment/{id}")
-    public ResponseEntity<AdsComment> getAdsComment(@PathVariable("ad_pk") String adPk,
-                                                    @PathVariable Integer id) {
-        return ResponseEntity.ok(new AdsComment());
-    }
-
-    @PatchMapping("/{ad_pk}/comment/{id}")
-    public ResponseEntity<AdsComment> updateAdsComment(@PathVariable("ad_pk") String adPk,
-                                                       @PathVariable Integer id,
-                                                       @RequestBody AdsComment adsComment) {
-        return ResponseEntity.ok(adsComment);
+    @GetMapping("/{id}")
+    public ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
+        return ResponseEntity.ok(new FullAds());
     }
 
     @DeleteMapping("/{id}")
@@ -72,15 +55,41 @@ public class AdsController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<FullAds> getAds(@PathVariable Integer id) {
-        return ResponseEntity.ok(new FullAds());
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<Ads> updateAds(@PathVariable Integer id,
-                                         @RequestBody Ads ads) {
-        return ResponseEntity.ok(ads);
+                                         @RequestBody CreateAds createAds) {
+        return ResponseEntity.ok(new Ads());
+    }
+
+    @GetMapping("/{adId}/comments/{commentId}")
+    public ResponseEntity<Comment> getComments(@PathVariable Integer adId,
+                                               @PathVariable Integer commentId) {
+        return ResponseEntity.ok(new Comment());
+    }
+
+    @DeleteMapping("/{adId}/comments/{commentId}")
+    public ResponseEntity deleteComments(@PathVariable Integer adId,
+                                         @PathVariable Integer commentId) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{adId}/comments/{commentId}")
+    public ResponseEntity<Comment> updateComment(@PathVariable Integer adId,
+                                                 @PathVariable Integer commentId,
+                                                 @RequestBody Comment comment) {
+        return ResponseEntity.ok(comment);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWrapperAds> getAdsMe() {
+        return ResponseEntity.ok(new ResponseWrapperAds());
+    }
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id,
+                                                 @RequestPart MultipartFile image) {
+
+        return ResponseEntity.ok().build();
     }
 
 }

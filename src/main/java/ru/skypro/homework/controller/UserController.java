@@ -1,11 +1,12 @@
 package ru.skypro.homework.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.CreateUser;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.User;
-import ru.skypro.homework.dto.ResponseWrapperUser;
 
 
 
@@ -15,19 +16,11 @@ import ru.skypro.homework.dto.ResponseWrapperUser;
 public class UserController {
 
     /**
-     * Добавляет пользователя
-     */
-    @PostMapping
-    public ResponseEntity<CreateUser> addUser(@RequestBody CreateUser user) {
-        return ResponseEntity.ok(user);
-    }
-
-    /**
-     * Выводит всех пользователей
+     * Выводит пользователя
      */
     @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperUser> getUsers() {
-        return ResponseEntity.ok(new ResponseWrapperUser());
+    public ResponseEntity<User> getUsers() {
+        return ResponseEntity.ok(new User());
     }
 
     /**
@@ -46,11 +39,8 @@ public class UserController {
         return ResponseEntity.ok(newPassword);
     }
 
-    /**
-     * Выводит пользователя по id
-     */
-    @GetMapping("{id}")
-    public ResponseEntity<User> getUser(@PathVariable Integer id) {
-        return ResponseEntity.ok(new User());
+    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> updateUserImage(@RequestPart MultipartFile image){
+        return ResponseEntity.ok().build();
     }
 }
