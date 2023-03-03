@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity updateUserImage(@RequestPart MultipartFile image){
+    public ResponseEntity<byte[]> updateUserImage(@RequestPart MultipartFile image){
         return ResponseEntity.ok().build();
     }
 }
