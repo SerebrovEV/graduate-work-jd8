@@ -1,5 +1,9 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
-
-import javax.xml.crypto.OctetStreamData;
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -22,57 +24,170 @@ public class AdsController {
 
     private final AdsService adsService;
 
-
+    @Operation(summary = "getAllAds", description = "Запрос списка всех объявлений",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ResponseWrapperAds.class)))
+            })
     @GetMapping
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
         return ResponseEntity.ok(new ResponseWrapperAds());
     }
 
+    @Operation(summary = "addAds", description = "Добавление нового объявление",
+            tags = {"Объявления"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Новое объявление",
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Created",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Ads.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Ads> addAds(@RequestPart CreateAds properties,
                                       @RequestPart MultipartFile image) {
         return ResponseEntity.status(HttpStatus.CREATED).body(new Ads());
     }
 
+    @Operation(summary = "getComments", description = "Запрос списка всех комментариев к объявлению",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ResponseWrapperComment.class))),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @GetMapping("/{id}/comments")
     public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Integer id) {
         return ResponseEntity.ok(new ResponseWrapperComment());
     }
 
+    @Operation(summary = "addComments", description = "Добавление комментария пользователя",
+            tags = {"Объявления"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Новый комментарий",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Comment.class))),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComments(@PathVariable Integer id,
                                                @RequestBody Comment comment) {
         return ResponseEntity.ok(comment);
     }
 
+    @Operation(summary = "getFullAd", description = "Запрос полной информации по объявлению",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = FullAds.class))),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @GetMapping("/{id}")
     public ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
         return ResponseEntity.ok(new FullAds());
     }
 
+    @Operation(summary = "removeAds", description = "Удаление объявления",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "No Content"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     @DeleteMapping("/{id}")
     public ResponseEntity removeAds(@PathVariable Integer id) {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "updateAds", description = "Обновление объявления",
+            tags = {"Объявления"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Обновленные данные объявления",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CreateAds.class))),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Created",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Ads.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @PatchMapping("/{id}")
     public ResponseEntity<Ads> updateAds(@PathVariable Integer id,
                                          @RequestBody CreateAds createAds) {
         return ResponseEntity.ok(new Ads());
     }
 
+    @Operation(summary = "getComments", description = "Запрос комментария пользователя",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @GetMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> getComments(@PathVariable Integer adId,
                                                @PathVariable Integer commentId) {
         return ResponseEntity.ok(new Comment());
     }
 
+    @Operation(summary = "deleteComments", description = "Удаление комментария",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "403", description = "Not Found")
+            })
     @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity deleteComments(@PathVariable Integer adId,
                                          @PathVariable Integer commentId) {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "updateComment", description = "Обновление комментария пользователя",
+            tags = {"Объявления"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Обновленный комментарий",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Comment.class))),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden"),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable Integer adId,
                                                  @PathVariable Integer commentId,
@@ -80,11 +195,34 @@ public class AdsController {
         return ResponseEntity.ok(comment);
     }
 
+    @Operation(summary = "getAdsMe", description = "Запрос списка всех объявлений пользователя",
+            tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ResponseWrapperAds.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAds> getAdsMe() {
         return ResponseEntity.ok(new ResponseWrapperAds());
     }
 
+
+    @Operation(summary = "updateAdsImage", description = "Обновление картинки объявления",
+            tags = {"Объявления"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Новая картинка объявления",
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Ok",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)),
+                    @ApiResponse(responseCode = "404", description = "Not Found")
+            })
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id,
                                                  @RequestPart MultipartFile image) {
