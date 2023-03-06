@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
-import ru.skypro.homework.service.AdsService;
-
-import javax.xml.crypto.OctetStreamData;
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -20,7 +17,6 @@ import javax.xml.crypto.OctetStreamData;
 @RequestMapping("/ads")
 public class AdsController {
 
-    private final AdsService adsService;
 
 
     @GetMapping
