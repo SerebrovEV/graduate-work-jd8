@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 
 --changeset sev:1
-create table "user" (
+create table "users" (
     id         serial primary key,
     first_name text,
     last_name  text,
@@ -25,3 +25,7 @@ create table ads
     description text,
     price       int
 );
+
+--changeset bm:1
+alter table ads
+    add column author_id int references "users"(id);
