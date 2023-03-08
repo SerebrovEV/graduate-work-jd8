@@ -5,10 +5,12 @@ import lombok.Data;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
-public class User {
+@Table(name = "users")
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +22,9 @@ public class User {
     private Date regDate;
     private boolean adminRole;
 
-  //  private List<Ads> adsList;
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private List<AdsEntity> adsList;
+
   @OneToMany(mappedBy = "user")
   private Collection<CommentEntity> commentEntities;
 }

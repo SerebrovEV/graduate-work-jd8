@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
@@ -36,7 +37,7 @@ public class AdsController {
             })
     @GetMapping
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return ResponseEntity.ok(new ResponseWrapperAds());
+        return ResponseEntity.ok(adsService.getAllAds());
     }
 
     @Operation(summary = "addAds", description = "Добавление нового объявление",
@@ -57,8 +58,9 @@ public class AdsController {
             })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Ads> addAds(@RequestPart CreateAds properties,
-                                      @RequestPart MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new Ads());
+                                      @RequestPart MultipartFile image,
+                                      Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adsService.addAds(properties, image, authentication));
     }
 
     @Operation(summary = "getComments", description = "Запрос списка всех комментариев к объявлению",
@@ -108,8 +110,8 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             })
     @GetMapping("/{id}")
-    public ResponseEntity<FullAds> getFullAd(@PathVariable Integer id) {
-        return ResponseEntity.ok(new FullAds());
+    public ResponseEntity<FullAds> getFullAd(@PathVariable Integer id, Authentication authentication) {
+        return ResponseEntity.ok(adsService.getFullAds(id));
     }
 
     @Operation(summary = "removeAds", description = "Удаление объявления",
@@ -121,7 +123,8 @@ public class AdsController {
             })
     @DeleteMapping("/{id}")
     public ResponseEntity removeAds(@PathVariable Integer id) {
-        return ResponseEntity.ok().build();
+        adsService.deleteAds(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "updateAds", description = "Обновление объявления",
@@ -142,8 +145,9 @@ public class AdsController {
             })
     @PatchMapping("/{id}")
     public ResponseEntity<Ads> updateAds(@PathVariable Integer id,
-                                         @RequestBody CreateAds createAds) {
-        return ResponseEntity.ok(new Ads());
+                                         @RequestBody CreateAds createAds,
+                                         Authentication authentication) {
+        return ResponseEntity.ok(adsService.updateAds(id, createAds, authentication));
     }
 
     @Operation(summary = "getComments", description = "Запрос комментария пользователя",
@@ -170,8 +174,8 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Not Found")
             })
     @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity deleteComments(@PathVariable Integer adId,
-                                         @PathVariable Integer commentId) {
+    public ResponseEntity<Void> deleteComments(@PathVariable Integer adId,
+                                               @PathVariable Integer commentId) {
         return ResponseEntity.ok().build();
     }
 
@@ -209,8 +213,8 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden")
             })
     @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAds> getAdsMe() {
-        return ResponseEntity.ok(new ResponseWrapperAds());
+    public ResponseEntity<ResponseWrapperAds> getAdsMe(Authentication authentication) {
+        return ResponseEntity.ok(adsService.getAdsMe(authentication));
     }
 
 
