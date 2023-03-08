@@ -2,10 +2,8 @@ package ru.skypro.homework.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -16,8 +14,8 @@ public class Ads {
     private String title;
     private String description;
     private Integer price;
-//    private Integer userId;
-
-   // private List<Comment> comments;
+    //    private Integer userId;
+    @OneToMany(mappedBy = "ads")
+    private Collection<CommentEntity> commentEntities;
 
 }

@@ -2,11 +2,9 @@ package ru.skypro.homework.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Date;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -23,5 +21,6 @@ public class User {
     private boolean adminRole;
 
   //  private List<Ads> adsList;
-  //  private List<Comment> comments;
+  @OneToMany(mappedBy = "user")
+  private Collection<CommentEntity> commentEntities;
 }

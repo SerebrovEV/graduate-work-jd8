@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.CommentService;
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -23,6 +24,7 @@ import ru.skypro.homework.service.AdsService;
 public class AdsController {
 
     private final AdsService adsService;
+    private final CommentService commentService;
 
     @Operation(summary = "getAllAds", description = "Запрос списка всех объявлений",
             tags = {"Объявления"},
@@ -92,6 +94,7 @@ public class AdsController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComments(@PathVariable Integer id,
                                                @RequestBody Comment comment) {
+        commentService.addComment(id,comment);
         return ResponseEntity.ok(comment);
     }
 

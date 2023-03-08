@@ -12,10 +12,10 @@ create table "user" (
 );
 
 --changeset sev:2
-create table comment (
+create table comment_entity (
     id   serial primary key,
     text text,
-    date timestamp
+    created_at timestamp
 );
 --changeset sev:3
 create table ads
@@ -25,3 +25,8 @@ create table ads
     description text,
     price       int
 );
+--changeset sev:4
+alter table comment_entity
+ADD column ads_id int references ads(id);
+alter table comment_entity
+add column user_id int references "user"(id);
