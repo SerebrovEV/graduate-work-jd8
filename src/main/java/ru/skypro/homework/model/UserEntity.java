@@ -2,15 +2,14 @@ package ru.skypro.homework.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Data
-public class User {
+@Table(name = "users")
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +21,7 @@ public class User {
     private Date regDate;
     private boolean adminRole;
 
-  //  private List<Ads> adsList;
-  //  private List<Comment> comments;
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private List<AdsEntity> adsList;
+    //  private List<Comment> comments;
 }
