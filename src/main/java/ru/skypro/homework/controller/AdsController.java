@@ -171,7 +171,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "200", description = "Ok"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404Lj,f", description = "Not Found")
+                    @ApiResponse(responseCode = "404", description = "Not Found")
             })
     @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComments(@PathVariable Integer adId,
