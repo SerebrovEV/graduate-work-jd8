@@ -30,7 +30,8 @@ public interface CommentService {
     /**
      * Получения комментария по id.
      *
-     * @param id - id комментария;
+     * @param adId - id объявления;
+     * @param commentId - id комментария;
      * @return Найденый комментарий;
      * @throws CommentNotFoundException
      */
@@ -39,7 +40,8 @@ public interface CommentService {
     /**
      * Удаление комментария по id.
      *
-     * @param id - id комментария;
+     * @param adId - id объявления;
+     * @param commentId - id комментария;
      * @throws CommentNotFoundException
      */
     void deleteComment(Integer adId, Integer commentId);
