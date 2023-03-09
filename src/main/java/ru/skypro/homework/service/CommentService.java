@@ -1,14 +1,54 @@
 package ru.skypro.homework.service;
 
 import ru.skypro.homework.dto.Comment;
+import ru.skypro.homework.dto.ResponseWrapperComment;
+import ru.skypro.homework.exception.CommentNotFoundException;
+import ru.skypro.homework.exception.AdsNotFoundException;
 
 public interface CommentService {
-
+    /**
+     * Добавление нового комментария к объявлению.
+     *
+     * @param id      - id объявления;
+     * @param comment - {@link Comment};
+     * @return Созданный комментарий;
+     * @throws AdsNotFoundException
+     */
     Comment addComment(Integer id, Comment comment);
 
-    Comment updateComment(Comment comment);
+    /**
+     * Обновление комментария.
+     *
+     * @param adId      - id объявления;
+     * @param commentId - id комментария;
+     * @param comment   - {@link Comment};
+     * @return Обновленный комментарий;
+     * @throws CommentNotFoundException
+     */
+    Comment updateComment(Integer adId, Integer commentId, Comment comment);
 
-    Comment getComment(Integer id);
+    /**
+     * Получения комментария по id.
+     *
+     * @param id - id комментария;
+     * @return Найденый комментарий;
+     * @throws CommentNotFoundException
+     */
+    Comment getComment(Integer adId, Integer commentId);
 
-    void deleteComment(Integer id);
+    /**
+     * Удаление комментария по id.
+     *
+     * @param id - id комментария;
+     * @throws CommentNotFoundException
+     */
+    void deleteComment(Integer adId, Integer commentId);
+
+    /**
+     * Получения списка все комментариев к объявлению.
+     *
+     * @param id - id объявления;
+     * @return Список всех комментариев.
+     */
+    ResponseWrapperComment getAllCommentsByAd(Integer id);
 }

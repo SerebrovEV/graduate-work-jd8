@@ -18,4 +18,10 @@ public class ExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(String.format("Пользователь %s не зарегистрирован", e.getEmail()));
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<String> handleCommentsNotFoundException(CommentNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(String.format("Комментарий c id = %d  не найдено", e.getCommentIdId()));
+    }
 }

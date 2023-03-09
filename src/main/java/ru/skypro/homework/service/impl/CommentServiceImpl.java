@@ -3,34 +3,66 @@ package ru.skypro.homework.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Comment;
+import ru.skypro.homework.dto.ResponseWrapperComment;
+import ru.skypro.homework.exception.AdsNotFoundException;
+import ru.skypro.homework.exception.CommentNotFoundException;
+import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.model.CommentEntity;
-import ru.skypro.homework.record.CommentMapper;
+import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.service.CommentService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final AdsRepository adsRepository;
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-    public Comment addComment(Integer id, Comment comment){
+
+    @Override
+    public Comment addComment(Integer id, Comment comment) {
         CommentEntity newComment = commentMapper.dtoToModel(comment);
-       // newComment.setAds();
+        newComment.setAds(adsRepository.findById(id).orElseThrow(()->new AdsNotFoundException(id)));
         commentRepository.save(newComment);
         return commentMapper.modelToDto(newComment);
     }
 
-    public Comment updateComment(Comment comment){
-         commentRepository.save(commentMapper.dtoToModel(comment));
-        return null;
+    @Override
+    public Comment updateComment(Integer adId, Integer commentId, Comment comment) {
+        CommentEntity findComment = findComment(adId,commentId);
+        findComment.setText(comment.getText());
+        findComment.setCreatedAt(LocalDateTime.parse(comment.getCreatedAt(), dateTimeFormatter));
+        commentRepository.save(findComment);
+        return commentMapper.modelToDto(findComment);
     }
 
-    public Comment getComment(Integer id){
-        return null;
+    @Override
+    public Comment getComment(Integer adId, Integer commentId) {
+        return commentMapper.modelToDto(findComment(adId, commentId));
     }
 
-    public void deleteComment(Integer id){
-        commentRepository.deleteById(id);
+    @Override
+    public void deleteComment(Integer adId, Integer commentId) {
+        findComment(adId, commentId);
+        commentRepository.deleteById(commentId);
+    }
+
+    @Override
+    public ResponseWrapperComment getAllCommentsByAd(Integer id) {
+        List<CommentEntity> comments = commentRepository.findAllByAds_Id(id);
+        ResponseWrapperComment findComments = new ResponseWrapperComment();
+        findComments.setResults(commentMapper.modelToDto(comments));
+        findComments.setCount(comments.size());
+        return findComments;
+    }
+
+    private CommentEntity findComment(Integer adId, Integer commentId) {
+        return commentRepository.findByAds_IdAndId(adId,commentId).orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 }
