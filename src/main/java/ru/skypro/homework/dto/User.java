@@ -2,6 +2,8 @@ package ru.skypro.homework.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class User {
 
@@ -15,7 +17,7 @@ public class User {
 
     private String phone;
 
-    private String regDate;
+    private Date regDate;
 
     private String image;
 
