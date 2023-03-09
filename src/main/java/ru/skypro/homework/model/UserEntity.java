@@ -18,7 +18,7 @@ public class UserEntity {
     private String lastName;
     private String email;
     private String phone;
-    private Date regDate;
+    private String regDate;
     private boolean adminRole;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
