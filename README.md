@@ -21,10 +21,12 @@
 - Spring Boot; 
 - Spring Data JPA;
 - Spring Security;
+- Log4j; 
 - PostgreSQL 15;
 - Hibernate;
 - Liquibase;
-- Lombok.
+- Lombok;
+- Maven.
 
 ### Тестирование
 
