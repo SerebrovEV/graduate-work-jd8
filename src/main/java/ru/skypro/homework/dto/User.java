@@ -17,7 +17,7 @@ public class User {
 
     private String phone;
 
-    private Date regDate;
+    private String regDate;
 
     private String image;
 

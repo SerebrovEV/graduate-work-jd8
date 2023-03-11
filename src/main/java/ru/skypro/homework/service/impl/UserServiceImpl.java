@@ -14,6 +14,8 @@ import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setFirstName(user.getFirstName());
         userEntity.setLastName(user.getLastName());
         userEntity.setPhone(user.getPhone());
-        userEntity.setRegDate(user.getRegDate());
+        userEntity.setRegDate(LocalDateTime.parse(user.getRegDate()));
         userRepository.save(userEntity);
         return userMapper.toDTO(userEntity);
     }

@@ -3,6 +3,7 @@ package ru.skypro.homework.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class UserEntity {
     private String lastName;
     private String email;
     private String phone;
-    private Date regDate;
+    private LocalDateTime regDate;
     private boolean adminRole;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)

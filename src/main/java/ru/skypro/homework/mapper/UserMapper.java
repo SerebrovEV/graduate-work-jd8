@@ -10,21 +10,10 @@ import java.util.Collection;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(source = "firstName", target = "firstName")
-    @Mapping(source = "lastName", target = "lastName")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "phone", target = "phone")
-    @Mapping(source = "regDate", target = "regDate")
-    @Mapping(source = "adminRole", target = "adminRole")
+    @Mapping(target = "regDate", source = "regDate", dateFormat = "dd-MM-yyyy HH:mm:ss")
     UserEntity toEntity(User user);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "firstName", target = "firstName")
-    @Mapping(source = "lastName", target = "lastName")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "phone", target = "phone")
-    @Mapping(source = "regDate", target = "regDate")
-    @Mapping(source = "image", target = "image")
+    @Mapping(target = "regDate", source = "regDate", dateFormat = "dd-MM-yyyy HH:mm:ss")
     User toDTO(UserEntity userEntity);
 
     Collection<UserEntity> toEntityList(Collection<User> user);
