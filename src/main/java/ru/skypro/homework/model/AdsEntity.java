@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Collection;
+
 
 @Entity
 @Data
@@ -22,6 +24,7 @@ public class AdsEntity {
     @JoinColumn(name ="author_id")
     private UserEntity author;
 
-   // private List<Comment> comments;
+    @OneToMany(mappedBy = "ads")
+    private Collection<CommentEntity> commentEntities;
 
 }
