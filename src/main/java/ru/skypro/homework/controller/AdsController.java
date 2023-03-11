@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.CommentService;
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -24,6 +25,7 @@ import ru.skypro.homework.service.AdsService;
 public class AdsController {
 
     private final AdsService adsService;
+    private final CommentService commentService;
 
     @Operation(summary = "getAllAds", description = "Запрос списка всех объявлений",
             tags = {"Объявления"},
@@ -72,7 +74,7 @@ public class AdsController {
             })
     @GetMapping("/{id}/comments")
     public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Integer id) {
-        return ResponseEntity.ok(new ResponseWrapperComment());
+        return ResponseEntity.ok(commentService.getAllCommentsByAd(id));
     }
 
     @Operation(summary = "addComments", description = "Добавление комментария пользователя",
@@ -94,6 +96,7 @@ public class AdsController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComments(@PathVariable Integer id,
                                                @RequestBody Comment comment) {
+        commentService.addComment(id, comment);
         return ResponseEntity.ok(comment);
     }
 
@@ -159,7 +162,7 @@ public class AdsController {
     @GetMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> getComments(@PathVariable Integer adId,
                                                @PathVariable Integer commentId) {
-        return ResponseEntity.ok(new Comment());
+        return ResponseEntity.ok(commentService.getComment(adId, commentId));
     }
 
     @Operation(summary = "deleteComments", description = "Удаление комментария",
@@ -168,11 +171,12 @@ public class AdsController {
                     @ApiResponse(responseCode = "200", description = "Ok"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "403", description = "Not Found")
+                    @ApiResponse(responseCode = "404", description = "Not Found")
             })
     @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComments(@PathVariable Integer adId,
                                                @PathVariable Integer commentId) {
+        commentService.deleteComment(adId, commentId);
         return ResponseEntity.ok().build();
     }
 
@@ -196,7 +200,7 @@ public class AdsController {
     public ResponseEntity<Comment> updateComment(@PathVariable Integer adId,
                                                  @PathVariable Integer commentId,
                                                  @RequestBody Comment comment) {
-        return ResponseEntity.ok(comment);
+        return ResponseEntity.ok(commentService.updateComment(adId, commentId, comment));
     }
 
     @Operation(summary = "getAdsMe", description = "Запрос списка всех объявлений пользователя",

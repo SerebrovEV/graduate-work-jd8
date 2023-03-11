@@ -3,6 +3,8 @@ package ru.skypro.homework.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Collection;
+
 
 @Entity
 @Data
@@ -19,6 +21,7 @@ public class AdsEntity {
     @JoinColumn(name ="author_id")
     private UserEntity author;
 
-   // private List<Comment> comments;
+    @OneToMany(mappedBy = "ads")
+    private Collection<CommentEntity> commentEntities;
 
 }
