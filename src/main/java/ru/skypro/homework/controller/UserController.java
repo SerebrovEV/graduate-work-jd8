@@ -5,19 +5,27 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.User;
+import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.service.impl.UserServiceImpl;
 
 
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
+
+    private final UserService userService;
+
     @Operation(summary = "getUser", description = "Получение пользователя", tags = {"Пользователи"},
             responses = {
                     @ApiResponse(
@@ -30,8 +38,8 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             })
     @GetMapping("/me")
-    public ResponseEntity<User> getUsers() {
-        return ResponseEntity.ok(new User());
+    public ResponseEntity<User> getUsers(Authentication authentication) {
+        return ResponseEntity.ok(userService.getUsers(authentication));
     }
 
     @Operation(summary = "updateUser", description = "Обновление данных пользователя", tags = {"Пользователи"},
@@ -53,7 +61,7 @@ public class UserController {
             })
     @PatchMapping("/me")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @Operation(summary = "setPassword", description = "Изменение пароля пользователя", tags = {"Пользователи"},
@@ -74,7 +82,7 @@ public class UserController {
             })
     @PostMapping("/set_password")
     public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword) {
-        return ResponseEntity.ok(newPassword);
+        return ResponseEntity.ok(userService.setPassword(newPassword));
     }
 
     @Operation(summary = "updateUserImage", description = "Обновление аватара пользователя", tags = {"Пользователи"},
@@ -88,6 +96,6 @@ public class UserController {
             })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> updateUserImage(@RequestPart MultipartFile image) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(userService.updateUserImage(image));
     }
 }
