@@ -17,7 +17,7 @@
 
 ### Язык и окружение:
 
-- Java 11 и выше;
+- Java 11;
 - Spring Boot; 
 - Spring Data JPA;
 - Spring Security;
