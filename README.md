@@ -19,6 +19,8 @@
 
 - Java 11 и выше;
 - Spring Boot; 
+- Spring Data JPA;
+- Spring Security;
 - PostgreSQL 15;
 - Hibernate;
 - Liquibase;
