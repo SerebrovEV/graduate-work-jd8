@@ -7,7 +7,7 @@ create table "users" (
     last_name  text,
     email      text,
     phone      text,
-    reg_date   date,
+    reg_date   timestamp,
     admin_role boolean
 );
 
