@@ -4,7 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -25,6 +25,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<AdsEntity> adsList;
 
-  @OneToMany(mappedBy = "user")
-  private Collection<CommentEntity> commentEntities;
+    @OneToMany(mappedBy = "user")
+    private Collection<CommentEntity> commentEntities;
 }
