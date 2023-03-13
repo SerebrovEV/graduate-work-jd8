@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.ResponseWrapperComment;
 import ru.skypro.homework.exception.AdsNotFoundException;
@@ -16,6 +17,7 @@ import ru.skypro.homework.model.CommentEntity;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
+import ru.skypro.homework.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,9 +37,13 @@ class CommentServiceImplTest {
     @Mock
     CommentRepository commentRepository;
     @Mock
+    UserRepository userRepository;
+    @Mock
     CommentMapper commentMapper;
     @Mock
     AdsRepository adsRepository;
+    @Mock
+    Authentication authentication;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     private CommentEntity commentEntity1;
     private CommentEntity commentEntity2;
@@ -46,15 +52,15 @@ class CommentServiceImplTest {
 
     private Comment comment1;
     private Comment comment2;
-    private UserEntity user1;
-    private UserEntity user2;
+    private UserEntity user;
+
 
     @BeforeEach
     public void setOut() {
-        user1 = new UserEntity();
-        user1.setId(1);
-        user2 = new UserEntity();
-        user2.setId(2);
+        user = new UserEntity();
+        user.setId(1);
+        user.setEmail("test@test.com");
+
 
         comment1 = new Comment();
         comment1.setPk(1);
@@ -71,14 +77,14 @@ class CommentServiceImplTest {
         commentEntity1 = new CommentEntity();
         commentEntity1.setId(1);
         commentEntity1.setText("test1");
-        commentEntity1.setUser(user1);
+        commentEntity1.setUser(user);
         commentEntity1.setAds(adsEntity1);
         commentEntity1.setCreatedAt(LocalDateTime.parse("05-01-2021 15:33:25", dateTimeFormatter));
 
         commentEntity2 = new CommentEntity();
         commentEntity2.setId(2);
         commentEntity2.setText("test2");
-        commentEntity2.setUser(user2);
+        commentEntity2.setUser(user);
         commentEntity2.setAds(adsEntity2);
         commentEntity2.setCreatedAt(LocalDateTime.parse("05-01-2021 15:35:25", dateTimeFormatter));
 
@@ -93,6 +99,9 @@ class CommentServiceImplTest {
     void addComment() {
         Integer id1 = 1;
         Integer id2 = 2;
+        String email = "test@test.com";
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findUserEntityByEmail(email)).thenReturn(Optional.ofNullable(user));
         when(commentMapper.dtoToModel(comment1)).thenReturn(commentEntity1);
         when(commentMapper.dtoToModel(comment2)).thenReturn(commentEntity2);
         when(commentRepository.save(commentEntity1)).thenReturn(commentEntity1);
@@ -105,8 +114,8 @@ class CommentServiceImplTest {
         Comment expected1 = comment1;
         Comment expected2 = comment2;
 
-        Comment actual1 = out.addComment(id1, comment1);
-        Comment actual2 = out.addComment(id2, comment2);
+        Comment actual1 = out.addComment(id1, comment1, authentication);
+        Comment actual2 = out.addComment(id2, comment2, authentication);
 
         assertThat(actual1).isEqualTo(expected1);
         assertThat(actual2).isEqualTo(expected2);
@@ -118,7 +127,7 @@ class CommentServiceImplTest {
     void addCommentAdsNotFound(){
         Integer id1 = 1;
         when(adsRepository.findById(1)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> out.addComment(id1, comment1)).isInstanceOf(AdsNotFoundException.class);
+        assertThatThrownBy(() -> out.addComment(id1, comment1, authentication)).isInstanceOf(AdsNotFoundException.class);
     }
 
     @Test
@@ -126,7 +135,7 @@ class CommentServiceImplTest {
         CommentEntity commentEntity3 = new CommentEntity();
         commentEntity3.setId(1);
         commentEntity3.setText("test2");
-        commentEntity3.setUser(user1);
+        commentEntity3.setUser(user);
         commentEntity3.setAds(adsEntity1);
         commentEntity3.setCreatedAt(LocalDateTime.parse("05-01-2021 15:35:25", dateTimeFormatter));
 
