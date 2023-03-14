@@ -200,8 +200,9 @@ public class AdsController {
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable Integer adId,
                                                  @PathVariable Integer commentId,
-                                                 @RequestBody Comment comment) {
-        return ResponseEntity.ok(commentService.updateComment(adId, commentId, comment));
+                                                 @RequestBody Comment comment,
+                                                 Authentication authentication) {
+        return ResponseEntity.ok(commentService.updateComment(adId, commentId, comment, authentication));
     }
 
     @Operation(summary = "getAdsMe", description = "Запрос списка всех объявлений пользователя",

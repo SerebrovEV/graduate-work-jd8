@@ -7,9 +7,11 @@ import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.ResponseWrapperComment;
 import ru.skypro.homework.exception.AdsNotFoundException;
 import ru.skypro.homework.exception.CommentNotFoundException;
+import ru.skypro.homework.exception.UserNotForbiddenException;
 import ru.skypro.homework.exception.UserNotRegisterException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.model.CommentEntity;
+import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
@@ -33,21 +35,32 @@ public class CommentServiceImpl implements CommentService {
     public Comment addComment(Integer id, Comment comment, Authentication authentication) {
 
         CommentEntity newComment = commentMapper.dtoToModel(comment);
-        newComment.setAds(adsRepository.findById(id)
-                .orElseThrow(() -> new AdsNotFoundException(id)));
+
         newComment.setUser(userRepository.findUserEntityByEmail(authentication.getName())
                 .orElseThrow(() -> new UserNotRegisterException(authentication.getName())));
+        newComment.setAds(adsRepository.findById(id)
+                .orElseThrow(() -> new AdsNotFoundException(id)));
         newComment.setCreatedAt(LocalDateTime.now());
+
         return commentMapper.modelToDto(commentRepository.save(newComment));
     }
 
     @Override
-    public Comment updateComment(Integer adId, Integer commentId, Comment comment) {
+    public Comment updateComment(Integer adId, Integer commentId, Comment comment, Authentication authentication) {
+
         CommentEntity findComment = findComment(adId, commentId);
-        findComment.setText(comment.getText());
-        findComment.setCreatedAt(LocalDateTime.parse(comment.getCreatedAt(), dateTimeFormatter));
-        commentRepository.save(findComment);
-        return commentMapper.modelToDto(findComment);
+
+        UserEntity findUser = userRepository.findUserEntityByEmail(authentication.getName())
+                .orElseThrow(() -> new UserNotRegisterException(authentication.getName()));
+
+        if (findComment.getUser().getId().equals(findUser.getId())) {
+            findComment.setText(comment.getText());
+            findComment.setCreatedAt(LocalDateTime.now());
+            return commentMapper.modelToDto(commentRepository.save(findComment));
+
+        } else {
+            throw new UserNotForbiddenException(findUser.getId());
+        }
     }
 
     @Override
@@ -71,6 +84,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentEntity findComment(Integer adId, Integer commentId) {
-        return commentRepository.findByAds_IdAndId(adId, commentId).orElseThrow(() -> new CommentNotFoundException(commentId));
+        return commentRepository.findByAds_IdAndId(adId, commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 }

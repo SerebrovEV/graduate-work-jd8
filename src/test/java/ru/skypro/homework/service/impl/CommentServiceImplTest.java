@@ -9,8 +9,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.ResponseWrapperComment;
+import ru.skypro.homework.dto.User;
 import ru.skypro.homework.exception.AdsNotFoundException;
 import ru.skypro.homework.exception.CommentNotFoundException;
+import ru.skypro.homework.exception.UserNotForbiddenException;
+import ru.skypro.homework.exception.UserNotRegisterException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.model.AdsEntity;
 import ru.skypro.homework.model.CommentEntity;
@@ -126,8 +129,22 @@ class CommentServiceImplTest {
     @Test
     void addCommentAdsNotFound(){
         Integer id1 = 1;
+        String email = "test@test.com";
+        when(commentMapper.dtoToModel(comment1)).thenReturn(commentEntity1);
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findUserEntityByEmail(email)).thenReturn(Optional.ofNullable(user));
         when(adsRepository.findById(1)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> out.addComment(id1, comment1, authentication)).isInstanceOf(AdsNotFoundException.class);
+    }
+
+    @Test
+    void addCommentUserNotRegister(){
+        Integer id1 = 1;
+        String email = "test@test.com";
+        when(commentMapper.dtoToModel(comment1)).thenReturn(commentEntity1);
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findUserEntityByEmail(email)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> out.addComment(id1, comment1, authentication)).isInstanceOf(UserNotRegisterException.class);
     }
 
     @Test
@@ -145,20 +162,38 @@ class CommentServiceImplTest {
         comment3.setAuthor(1);
         comment3.setCreatedAt("05-01-2021 15:35:25");
 
+        String email = "test@test.com";
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findUserEntityByEmail(email)).thenReturn(Optional.ofNullable(user));
         when(commentRepository.findByAds_IdAndId(1, 1)).thenReturn(Optional.ofNullable(commentEntity1));
         when(commentRepository.save(any())).thenReturn(commentEntity3);
         when(commentMapper.modelToDto((CommentEntity)any())).thenReturn(comment3);
 
         Comment expected = comment3;
-        Comment actual = out.updateComment(1, 1, comment3);
+        Comment actual = out.updateComment(1, 1, comment3, authentication);
 
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void updateCommentCommentNotFound() {
+    void updateCommentNotFound() {
         when(commentRepository.findByAds_IdAndId(1, 1)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> out.updateComment(1, 1, comment1)).isInstanceOf(CommentNotFoundException.class);
+        assertThatThrownBy(() -> out.updateComment(1, 1, comment1, authentication))
+                .isInstanceOf(CommentNotFoundException.class);
+
+    }
+
+    @Test
+    void updateCommentUserNotForbidden() {
+        String email = "test@test.com";
+        UserEntity user2 = new UserEntity();
+        user2.setId(2);
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findUserEntityByEmail(email)).thenReturn(Optional.ofNullable(user2));
+        when(commentRepository.findByAds_IdAndId(1, 1)).thenReturn(Optional.ofNullable(commentEntity1));
+
+        assertThatThrownBy(() -> out.updateComment(1, 1, comment1, authentication))
+                .isInstanceOf(UserNotForbiddenException.class);
 
     }
 

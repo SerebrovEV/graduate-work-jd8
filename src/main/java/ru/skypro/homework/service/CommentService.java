@@ -27,7 +27,7 @@ public interface CommentService {
      * @return Обновленный комментарий;
      * @throws CommentNotFoundException
      */
-    Comment updateComment(Integer adId, Integer commentId, Comment comment);
+    Comment updateComment(Integer adId, Integer commentId, Comment comment, Authentication authentication);
 
     /**
      * Получения комментария по id.
